@@ -1,16 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Camera } from 'expo-camera';
+import * as tf from '@tensorflow/tfjs';
+import * as mobilenet from '@tensorflow-models/mobilenet';
 
 
 const General = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [isTfReady, setIsTfReady] = useState(false);
+  const [isModelReady, setIsModelReady] = useState(false);
+
+  
+  if(isTfReady){
+    console.log("TF Ready!!");
+  }
+   if(isModelReady){
+    console.log("Model Ready!!");
+  }
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === 'granted');
+      await tf.ready()
+      setIsTfReady(true);
+
+      const model = await mobilenet.load()
+      setIsModelReady(true);
+
     })();
   }, []);
 
